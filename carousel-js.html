@@ -286,10 +286,10 @@
                     /* add touch navigation to carousel */
                     currentCarousel.addEventListener('touchstart', (event) => {
                         touchRecordPos(event);
-                    }, {passive: true});
+                    }, { passive: true }, false);
                     currentCarousel.addEventListener('touchend', (event) => {
                         touchRecordMove(event, carouselItemWrapper);
-                    }, {passive: true});
+                    }, { passive: true }, false);
                 }).catch((error) => {
                     console.log(error);
                     return Promise.reject(error);
