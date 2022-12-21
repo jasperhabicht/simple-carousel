@@ -189,7 +189,7 @@
         /* helper functions to center active item in carousel */
         const centerActiveItem = (carouselWrapper, animate = true) => {
             const currentItem = carouselWrapper.querySelector('.active');
-            const currentItemOffset = carouselWrapper.parentElement.offsetWidth / 2 - currentItem.offsetLeft - currentItem.offsetWidth / 2;
+            const currentItemOffset = carouselWrapper.closest('.carousel').offsetWidth / 2 - currentItem.offsetLeft - currentItem.offsetWidth / 2;
             /* skip transition (relevant CSS class is needed) */
             if(animate === false) {
                 carouselWrapper.classList.add('skip-transition');
