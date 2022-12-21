@@ -142,7 +142,11 @@ class Carousel {
       /* append event handler that fires if first 5 images are loaded */
       let visibleItemImages = [];
       for (let i = 0; i < 5; i += 1) {
-        visibleItemImages.push(this.carouselParent.querySelectorAll('.item img')[i]);
+        try {
+          visibleItemImages.push(this.carouselParent.querySelectorAll('.item img')[i]);
+        } catch (error) {
+          console.debug('Entry ' + i + ' has no IMG tag.');
+        }
       }
       this.imagesLoadedEvent(visibleItemImages);        
       return carouselItemWrapper;
