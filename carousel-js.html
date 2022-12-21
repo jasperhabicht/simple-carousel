@@ -5,6 +5,12 @@
         <base href="https://www.dino-bruns.de/" />
 
         <style>
+            *, :after, :before {
+                box-sizing: border-box;
+                -moz-box-sizing: border-box;
+                -webkit-box-sizing: border-box;
+            }
+
             body {
                 opacity: 1;
                 transition: opacity .5s ease;
@@ -46,15 +52,16 @@
             }
 
             .carousel .nav {
-                font-family: 'FontAwesome', Verdana, Helvetica, Arial, sans-serif;
+                font-family: 'FontAwesome', sans-serif;
                 font-size: 5em;
             }
 
             .carousel .nav .next,
             .carousel .nav .prev {
-                color: #fc0;
-                top: 45%;
                 position: absolute;
+                top: 45%;
+                color: #fc0;
+                cursor: pointer;
             }
 
             .carousel .nav .next:hover,
@@ -142,12 +149,14 @@
         <div class="item"><img src="img/innenausbau/IMG_1718-512.jpg" alt="" /></div>
     </div>
 
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=Element.prototype.classList%2CElement.prototype.cloneNode%2CPromise%2Cdocument.querySelector"></script>
+
     <script>
     /* sandboxing to prevent leakage of function assignments */
     (() => {
          /* helper functions to select next item in carousel */
          const getNextItem = (carouselWrapper) => {
-            const currentItem = carouselWrapper.getElementsByClassName('active')[0];
+            const currentItem = carouselWrapper.querySelector('.active');
             currentItem.classList.remove('active');
             currentItem.nextSibling.classList.add('active');
             centerActiveItem(carouselWrapper);
@@ -155,7 +164,7 @@
             window.setTimeout(() => {
                 if(currentItem.nextSibling.classList.contains('cloned')) {
                     currentItem.nextSibling.classList.remove('active');
-                    carouselWrapper.getElementsByClassName('item')[5].classList.add('active');
+                    carouselWrapper.querySelectorAll('.item')[5].classList.add('active');
                     centerActiveItem(carouselWrapper, false);
                 }
             }, 550);
@@ -163,7 +172,7 @@
 
         /* helper functions to select previous item in carousel */
         const getPrevItem = (carouselWrapper) => {
-            const currentItem = carouselWrapper.getElementsByClassName('active')[0];
+            const currentItem = carouselWrapper.querySelector('.active');
             currentItem.classList.remove('active');
             currentItem.previousSibling.classList.add('active');
             centerActiveItem(carouselWrapper);
@@ -171,7 +180,7 @@
             window.setTimeout(() => {
                 if(currentItem.previousSibling.classList.contains('cloned')) {
                     currentItem.previousSibling.classList.remove('active');
-                    carouselWrapper.getElementsByClassName('item')[carouselWrapper.getElementsByClassName('item').length - 6].classList.add('active');
+                    carouselWrapper.querySelectorAll('.item')[carouselWrapper.querySelectorAll('.item').length - 6].classList.add('active');
                     centerActiveItem(carouselWrapper, false);
                 } 
             }, 550);
@@ -179,7 +188,7 @@
 
         /* helper functions to center active item in carousel */
         const centerActiveItem = (carouselWrapper, animate = true) => {
-            const currentItem = carouselWrapper.getElementsByClassName('active')[0];
+            const currentItem = carouselWrapper.querySelector('.active');
             const currentItemOffset = carouselWrapper.parentElement.offsetWidth / 2 - currentItem.offsetLeft - currentItem.offsetWidth / 2;
             /* skip transition (relevant CSS class is needed) */
             if(animate === false) {
@@ -227,7 +236,7 @@
         };
 
         document.addEventListener('DOMContentLoaded', () => {
-            const allCarousels = document.getElementsByClassName('carousel');
+            const allCarousels = document.querySelectorAll('.carousel');
             for(let i = 0; i < allCarousels.length; i += 1) {
                 const currentCarousel = allCarousels[i];
                 new Promise((resolve, reject) => {
@@ -235,33 +244,33 @@
                     const carouselItemWrapper = document.createElement('div');
                     carouselItemWrapper.classList.add('wrapper');
                     currentCarousel.appendChild(carouselItemWrapper);
-                    for(let j = currentCarousel.getElementsByClassName('item').length - 1; j >= 0; j -= 1) {
+                    for(let j = currentCarousel.querySelectorAll('.item').length - 1; j >= 0; j -= 1) {
                         if(j == 0) {
-                            allCarousels[i].getElementsByClassName('item')[j].classList.add('active');
+                            allCarousels[i].querySelectorAll('.item')[j].classList.add('active');
                         }
-                        carouselItemWrapper.insertAdjacentElement('afterbegin', allCarousels[i].getElementsByClassName('item')[j]);
+                        carouselItemWrapper.insertAdjacentElement('afterbegin', allCarousels[i].querySelectorAll('.item')[j]);
                     }  
                     resolve(carouselItemWrapper);
                 }).then((carouselItemWrapper) => {
                     /* add five items before and after carousel by cloning head and tail respectively */
-                    const carouselItemsCount = carouselItemWrapper.getElementsByClassName('item').length;
+                    const carouselItemsCount = carouselItemWrapper.querySelectorAll('.item').length;
                     for(let i = carouselItemsCount - 1; i > carouselItemsCount - 6; i -= 1) {
-                        const clonedItem = carouselItemWrapper.getElementsByClassName('item')[carouselItemsCount - 1].cloneNode(true);
+                        const clonedItem = carouselItemWrapper.querySelectorAll('.item')[carouselItemsCount - 1].cloneNode(true);
                         clonedItem.classList.remove('active');
                         clonedItem.classList.add('cloned');
                         clonedItem.classList.add('before');
                         carouselItemWrapper.insertAdjacentElement('afterBegin', clonedItem);
                     }  
                     for(let i = 5; i < 10; i += 1) {
-                        const clonedItem = carouselItemWrapper.getElementsByClassName('item')[i].cloneNode(true);
+                        const clonedItem = carouselItemWrapper.querySelectorAll('.item')[i].cloneNode(true);
                         clonedItem.classList.remove('active');
                         clonedItem.classList.add('cloned');
                         clonedItem.classList.add('after');
                         carouselItemWrapper.insertAdjacentElement('beforeEnd', clonedItem);
                     }
                     /* enable lazy loading for images that are not shown on start */
-                    for(let i = 10; i < carouselItemWrapper.getElementsByClassName('item').length; i += 1) {
-                        carouselItemWrapper.getElementsByClassName('item')[i].getElementsByTagName('img')[0].setAttribute('loading', 'lazy');
+                    for(let i = 11; i < carouselItemWrapper.querySelectorAll('.item').length; i += 1) {
+                        carouselItemWrapper.querySelector('.item:nth-child(' + i + ') img').setAttribute('loading', 'lazy');
                     }
                     return carouselItemWrapper;
                 }).then((carouselItemWrapper) => {
@@ -270,13 +279,13 @@
                     carouselNavigation.classList.add('nav');
                     const carouselButtonPrev = document.createElement('div');
                     carouselButtonPrev.classList.add('prev');
-                    carouselButtonPrev.textContent = '\uF053';
+                    carouselButtonPrev.textContent = '\u25C0'; /* '\uF053'; */
                     carouselButtonPrev.addEventListener('click', () => {
                         getPrevItem(carouselItemWrapper);
                     });
                     const carouselButtonNext = document.createElement('div');
                     carouselButtonNext.classList.add('next');
-                    carouselButtonNext.textContent = '\uF054';
+                    carouselButtonNext.textContent = '\u25B6'; /* '\uF054'; */
                     carouselButtonNext.addEventListener('click', () => {
                         getNextItem(carouselItemWrapper);
                     });
@@ -299,9 +308,9 @@
 
         /* remove "loading" class from body after all images have been loaded */
         window.addEventListener('load', () => {
-            const allCarousels = document.getElementsByClassName('carousel');
+            const allCarousels = document.querySelectorAll('.carousel');
             for(let i = 0; i < allCarousels.length; i += 1) {
-                centerActiveItem(allCarousels[i].getElementsByClassName('wrapper')[0], false);
+                centerActiveItem(allCarousels[i].querySelector('.wrapper'), false);
             }
             document.body.classList.remove('loading');
         });
@@ -311,16 +320,16 @@
         window.addEventListener('resize', () => {
             clearTimeout(resizeTimeout);
             resizeTimeout = setTimeout(() => {
-                const allCarousels = document.getElementsByClassName('carousel');
+                const allCarousels = document.querySelectorAll('.carousel');
                 for(let i = 0; i < allCarousels.length; i += 1) {
-                    centerActiveItem(allCarousels[i].getElementsByClassName('wrapper')[0], false);
+                    centerActiveItem(allCarousels[i].querySelector('.wrapper'), false);
                 }
             }, 250);
         }, false);
 
         /* autoplay */
         setInterval(() => {
-            getNextItem(document.getElementsByClassName('carousel')[0].getElementsByClassName('wrapper')[0]);
+            getNextItem(document.querySelector('.carousel .wrapper'));
         }, 8000);
     })();
     </script>
