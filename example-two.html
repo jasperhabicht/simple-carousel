@@ -80,7 +80,7 @@
 
     <body>
 
-    <div class="carousel loading">
+    <div id="carousel-1" class="carousel loading">
         <div class="item"><img src="https://www.dino-bruns.de/img/innenausbau/IMG_5529-512.jpg" alt="" /></div>
         <div class="item"><img src="https://www.dino-bruns.de/img/innenausbau/IMG_5535-512.jpg" alt="" /></div>
         <div class="item"><img src="https://www.dino-bruns.de/img/innenausbau/IMG_5523-512.jpg" alt="" /></div>
@@ -192,7 +192,7 @@
     window.addEventListener('load', () => {
         /* autoplay */
         setInterval(() => {
-            getNextItem(document.querySelector('.carousel .wrapper'));
+            carousels['carousel-1'].getNextItem();
         }, 8000);
     });
 
