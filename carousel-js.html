@@ -196,16 +196,13 @@
         /* helper functions for touch events */
         let touchMoveStartX = null;
         let touchMoveStartY = null;
-
         const touchUnifyMove = (event) => {
             return event.changedTouches ? event.changedTouches[0] : event;
         };
-
         const touchRecordPos = (event) => {
             touchMoveStartX = touchUnifyMove(event).clientX;
             touchMoveStartY = touchUnifyMove(event).clientY;
         };
-
         const touchRecordMove = (event, container) => {
             let touchDistanceX = 0;
             let touchDistanceY = 0;
@@ -228,7 +225,6 @@
             }
             return false;
         };
-        /* ===== */
 
         document.addEventListener('DOMContentLoaded', () => {
             const allCarousels = document.getElementsByClassName('carousel');
@@ -286,18 +282,14 @@
                     });
                     carouselNavigation.appendChild(carouselButtonPrev);
                     carouselNavigation.appendChild(carouselButtonNext);
-
                     currentCarousel.appendChild(carouselNavigation);
-
                     /* add touch navigation to carousel */
                     currentCarousel.addEventListener('touchstart', (event) => {
                         touchRecordPos(event);
                     }, false);
-
                     currentCarousel.addEventListener('touchend', (event) => {
                         touchRecordMove(event, carouselItemWrapper);
                     }, false);
-
                 }).catch((error) => {
                     console.log(error);
                     return Promise.reject(error);
@@ -327,7 +319,7 @@
         }, false);
 
         /* autoplay */
-        setTimeout(() => {
+        setInterval(() => {
             getNextItem(document.getElementsByClassName('carousel')[0].getElementsByClassName('wrapper')[0]);
         }, 8000);
     })();
