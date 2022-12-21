@@ -96,13 +96,16 @@ class Carousel {
 
   /* select next item in carousel */
   getNextItem = () => {
+    if(this.carouselParent.querySelectorAll('.item.active').length == 0) {
+      this.carouselParent.querySelectorAll('.item')[0].classList.add('active');
+    }
     const carouselItemWrapper = this.carouselParent.querySelector('.wrapper');
     const currentItem = carouselItemWrapper.querySelector('.active');
     currentItem.classList.remove('active');
     try {
       currentItem.nextSibling.classList.add('active');;
     } catch (error) {
-      console.debug('Bounce: Next item currently not accessible.');
+      console.debug('Next item currently not accessible.');
     }
     this.centerActiveItem();
     /* handle last item: jump to start after animation */
@@ -114,7 +117,7 @@ class Carousel {
           this.centerActiveItem(false);
         }
       } catch (error) {
-        console.debug('Bounce: Next item currently not accessible.');
+        console.debug('Next item currently not accessible.');
       }
     }, this.jumpBackTimeout);
     return true;
@@ -122,13 +125,16 @@ class Carousel {
 
   /* select previous item in carousel */
   getPrevItem = () => {
+    if(this.carouselParent.querySelectorAll('.item.active').length == 0) {
+      this.carouselParent.querySelectorAll('.item')[0].classList.add('active');
+    }
     const carouselItemWrapper = this.carouselParent.querySelector('.wrapper');
     const currentItem = carouselItemWrapper.querySelector('.active');
     currentItem.classList.remove('active');
     try {
       currentItem.previousSibling.classList.add('active');
     } catch (error) {
-      console.debug('PBounce: Previous item currently not accessible.');
+      console.debug('Previous item currently not accessible.');
     }
     this.centerActiveItem();
     /* handle frist item: jump to end after animation */
@@ -140,7 +146,7 @@ class Carousel {
           this.centerActiveItem(false);
         }
       } catch (error) {
-        console.debug('Bounce: Previous item currently not accessible.');
+        console.debug('Previous item currently not accessible.');
       }
     }, this.jumpBackTimeout);
     return true;
@@ -153,11 +159,9 @@ class Carousel {
       carouselItemWrapper.classList.add('wrapper');
       this.carouselParent.appendChild(carouselItemWrapper);
       for (let j = this.carouselParent.querySelectorAll('.item').length - 1; j >= 0; j -= 1) {
-        if (j == 0) {
-          this.carouselParent.querySelectorAll('.item')[j].classList.add('active');
-        }
         carouselItemWrapper.insertAdjacentElement('afterbegin', this.carouselParent.querySelectorAll('.item')[j]);
       }
+      this.carouselParent.querySelectorAll('.item')[0].classList.add('active');
       resolve(carouselItemWrapper);
     }).then((carouselItemWrapper) => {
       /* add five items before and after carousel by cloning head and tail respectively */
