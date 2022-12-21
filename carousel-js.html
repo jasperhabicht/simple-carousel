@@ -143,12 +143,15 @@
     </div>
 
     <script>
+    /* sandboxing to prevent leakage of function assignments */
     (() => {
-        const getNextItem = (carouselWrapper) => {
+         /* helper functions to select next item in carousel */
+         const getNextItem = (carouselWrapper) => {
             const currentItem = carouselWrapper.getElementsByClassName('active')[0];
             currentItem.classList.remove('active');
             currentItem.nextSibling.classList.add('active');
             centerActiveItem(carouselWrapper);
+            /* handle last item: jump to start after animation */
             window.setTimeout(() => {
                 if(currentItem.nextSibling.classList.contains('cloned')) {
                     currentItem.nextSibling.classList.remove('active');
@@ -158,11 +161,13 @@
             }, 550);
         }
 
+        /* helper functions to select previous item in carousel */
         const getPrevItem = (carouselWrapper) => {
             const currentItem = carouselWrapper.getElementsByClassName('active')[0];
             currentItem.classList.remove('active');
             currentItem.previousSibling.classList.add('active');
             centerActiveItem(carouselWrapper);
+            /* handle frist item: jump to end after animation */
             window.setTimeout(() => {
                 if(currentItem.previousSibling.classList.contains('cloned')) {
                     currentItem.previousSibling.classList.remove('active');
@@ -172,19 +177,23 @@
             }, 550);
         }
 
+        /* helper functions to center active item in carousel */
         const centerActiveItem = (carouselWrapper, animate = true) => {
             const currentItem = carouselWrapper.getElementsByClassName('active')[0];
             const currentItemOffset = carouselWrapper.parentElement.offsetWidth / 2 - currentItem.offsetLeft - currentItem.offsetWidth / 2;
+            /* skip transition (relevant CSS class is needed) */
             if(animate === false) {
                 carouselWrapper.classList.add('skip-transition');
             }
             carouselWrapper.style.transform = 'translateX(' + parseInt(currentItemOffset) + 'px)';
+            /* force paint reflow */
             void carouselWrapper.offsetWidth;
             if(animate === false) {
                 carouselWrapper.classList.remove('skip-transition');
             }
         }
         
+        /* helper functions for touch events */
         let touchMoveStartX = null;
         let touchMoveStartY = null;
 
@@ -219,12 +228,14 @@
             }
             return false;
         };
+        /* ===== */
 
         document.addEventListener('DOMContentLoaded', () => {
             const allCarousels = document.getElementsByClassName('carousel');
             for(let i = 0; i < allCarousels.length; i += 1) {
                 const currentCarousel = allCarousels[i];
                 new Promise((resolve, reject) => {
+                    /* wrap all items in carousel */
                     const carouselItemWrapper = document.createElement('div');
                     carouselItemWrapper.classList.add('wrapper');
                     currentCarousel.appendChild(carouselItemWrapper);
@@ -236,6 +247,7 @@
                     }  
                     resolve(carouselItemWrapper);
                 }).then((carouselItemWrapper) => {
+                    /* add five items before and after carousel by cloning head and tail respectively */
                     const carouselItemsCount = carouselItemWrapper.getElementsByClassName('item').length;
                     for(let i = carouselItemsCount - 1; i > carouselItemsCount - 6; i -= 1) {
                         const clonedItem = carouselItemWrapper.getElementsByClassName('item')[carouselItemsCount - 1].cloneNode(true);
@@ -251,11 +263,13 @@
                         clonedItem.classList.add('after');
                         carouselItemWrapper.insertAdjacentElement('beforeEnd', clonedItem);
                     }
+                    /* enable lazy loading for images that are not shown on start */
                     for(let i = 10; i < carouselItemWrapper.getElementsByClassName('item').length; i += 1) {
                         carouselItemWrapper.getElementsByClassName('item')[i].getElementsByTagName('img')[0].setAttribute('loading', 'lazy');
                     }
                     return carouselItemWrapper;
                 }).then((carouselItemWrapper) => {
+                    /* add mouse navigation to carousel */
                     const carouselNavigation = document.createElement('div');
                     carouselNavigation.classList.add('nav');
                     const carouselButtonPrev = document.createElement('div');
@@ -275,6 +289,7 @@
 
                     currentCarousel.appendChild(carouselNavigation);
 
+                    /* add touch navigation to carousel */
                     currentCarousel.addEventListener('touchstart', (event) => {
                         touchRecordPos(event);
                     }, false);
@@ -290,6 +305,7 @@
             }
         });
 
+        /* remove "loading" class from body after all images have been loaded */
         window.addEventListener('load', () => {
             const allCarousels = document.getElementsByClassName('carousel');
             for(let i = 0; i < allCarousels.length; i += 1) {
@@ -298,6 +314,7 @@
             document.body.classList.remove('loading');
         });
 
+        /* update alignment after window resize (wrap in timeout to prevent bubbling) */
         let resizeTimeout = false;
         window.addEventListener('resize', () => {
             clearTimeout(resizeTimeout);
@@ -306,8 +323,13 @@
                 for(let i = 0; i < allCarousels.length; i += 1) {
                     centerActiveItem(allCarousels[i].getElementsByClassName('wrapper')[0], false);
                 }
-            }, 500);
+            }, 250);
         }, false);
+
+        /* autoplay */
+        setTimeout(() => {
+            getNextItem(document.getElementsByClassName('carousel')[0].getElementsByClassName('wrapper')[0]);
+        }, 8000);
     })();
     </script>
 
