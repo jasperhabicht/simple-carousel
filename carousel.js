@@ -17,6 +17,7 @@ class Carousel {
     this.nextSymbol = options.nextSymbol;
     this.jumpBackTimeout = options.jumpBackTimeout;
     this.resizeRepaintTimeout = options.resizeRepaintTimeout;
+    this.bounceDelay = options.bounceDelay;
     Carousel.all.push(this);
   }
 
@@ -32,6 +33,7 @@ class Carousel {
   touchRecordPos = (event) => {
     this.touchMoveStartX = this.touchUnifyMove(event).clientX;
     this.touchMoveStartY = this.touchUnifyMove(event).clientY;
+    return true;
   };
   touchRecordMove = (event) => {
     let touchDistanceX = 0;
@@ -71,6 +73,7 @@ class Carousel {
         imagesArray[i].load();
       }
     }
+    return false;
   }
 
   /* helper functions to center active item in carousel */
@@ -88,6 +91,7 @@ class Carousel {
     if (animate === false) {
       carouselItemWrapper.classList.remove('skip-transition');
     }
+    return true;
   }
 
   /* select next item in carousel */
@@ -95,16 +99,25 @@ class Carousel {
     const carouselItemWrapper = this.carouselParent.querySelector('.wrapper');
     const currentItem = carouselItemWrapper.querySelector('.active');
     currentItem.classList.remove('active');
-    currentItem.nextSibling.classList.add('active');
+    try {
+      currentItem.nextSibling.classList.add('active');;
+    } catch (error) {
+      console.debug('Bounce: Next item currently not accessible.');
+    }
     this.centerActiveItem();
     /* handle last item: jump to start after animation */
     window.setTimeout(() => {
-      if (currentItem.nextSibling.classList.contains('cloned')) {
-        currentItem.nextSibling.classList.remove('active');
-        carouselItemWrapper.querySelectorAll('.item')[this.fillRepeat].classList.add('active');
-        this.centerActiveItem(false);
+      try {
+        if (currentItem.nextSibling.classList.contains('cloned')) {
+          currentItem.nextSibling.classList.remove('active');
+          carouselItemWrapper.querySelectorAll('.item')[this.fillRepeat].classList.add('active');
+          this.centerActiveItem(false);
+        }
+      } catch (error) {
+        console.debug('Bounce: Next item currently not accessible.');
       }
     }, this.jumpBackTimeout);
+    return true;
   }
 
   /* select previous item in carousel */
@@ -112,16 +125,25 @@ class Carousel {
     const carouselItemWrapper = this.carouselParent.querySelector('.wrapper');
     const currentItem = carouselItemWrapper.querySelector('.active');
     currentItem.classList.remove('active');
-    currentItem.previousSibling.classList.add('active');
+    try {
+      currentItem.previousSibling.classList.add('active');
+    } catch (error) {
+      console.debug('PBounce: Previous item currently not accessible.');
+    }
     this.centerActiveItem();
     /* handle frist item: jump to end after animation */
     window.setTimeout(() => {
-      if (currentItem.previousSibling.classList.contains('cloned')) {
-        currentItem.previousSibling.classList.remove('active');
-        carouselItemWrapper.querySelectorAll('.item')[this.carouselParent.querySelectorAll('.item').length - (this.fillRepeat + 1)].classList.add('active');
-        this.centerActiveItem(false);
+      try {
+        if (currentItem.previousSibling.classList.contains('cloned')) {
+          currentItem.previousSibling.classList.remove('active');
+          carouselItemWrapper.querySelectorAll('.item')[this.carouselParent.querySelectorAll('.item').length - (this.fillRepeat + 1)].classList.add('active');
+          this.centerActiveItem(false);
+        }
+      } catch (error) {
+        console.debug('Bounce: Previous item currently not accessible.');
       }
     }, this.jumpBackTimeout);
+    return true;
   }
 
   initialize = () => {
@@ -160,7 +182,7 @@ class Carousel {
         try {
           visibleItemImages.push(this.carouselParent.querySelectorAll('.item img')[i]);
         } catch (error) {
-          console.debug('Entry ' + i + ' has no IMG tag.');
+          console.debug('Item ' + i + ' has no IMG tag.');
         }
       }
       this.imagesLoadedEvent(visibleItemImages);        
@@ -171,13 +193,13 @@ class Carousel {
       carouselNavigation.classList.add('nav');
       const carouselButtonPrev = document.createElement('div');
       carouselButtonPrev.classList.add('prev');
-      carouselButtonPrev.textContent = this.prevSymbol; /* '\uF053'; */
+      carouselButtonPrev.textContent = this.prevSymbol;
       carouselButtonPrev.addEventListener('click', () => {
         this.getPrevItem();
       });
       const carouselButtonNext = document.createElement('div');
       carouselButtonNext.classList.add('next');
-      carouselButtonNext.textContent = this.nextSymbol; /* '\uF054'; */
+      carouselButtonNext.textContent = this.nextSymbol;
       carouselButtonNext.addEventListener('click', () => {
         this.getNextItem();
       });
@@ -191,6 +213,7 @@ class Carousel {
       this.carouselParent.addEventListener('touchend', (event) => {
         this.touchRecordMove(event);
       }, { passive: true }, false);
+      return true;
     }).catch((error) => {
       console.log(error);
       return Promise.reject(error);
