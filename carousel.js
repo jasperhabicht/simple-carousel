@@ -1,7 +1,22 @@
 class Carousel {
-  constructor(carouselParent) {
+  constructor(carouselParent, options = { 
+      fillRepeat: 5, 
+      loadSensitivity: 5, 
+      touchError: 100, 
+      prevSymbol: '\u25C0', 
+      nextSymbol: '\u25B6', 
+      jumpBackTimeout: 550,
+      resizeRepaintTimeout: 250
+    }) {
     this.carouselParent = carouselParent;
     this.id = carouselParent.id;
+    this.fillRepeat = options.fillRepeat;
+    this.loadSensitivity = options.loadSensitivity;
+    this.touchError = options.touchError;
+    this.prevSymbol = options.prevSymbol;
+    this.nextSymbol = options.nextSymbol;
+    this.jumpBackTimeout = options.jumpBackTimeout;
+    this.resizeRepaintTimeout = options.resizeRepaintTimeout;
     Carousel.all.push(this);
   }
 
@@ -21,7 +36,7 @@ class Carousel {
   touchRecordMove = (event) => {
     let touchDistanceX = 0;
     let touchDistanceY = 0;
-    let touchError = 100;
+    let touchError = this.touchError;
     if (this.touchMoveStartX || this.touchMoveStartX === 0) {
       touchDistanceX = this.touchUnifyMove(event).clientX - this.touchMoveStartX;
       this.touchMoveStartX = null;
@@ -86,10 +101,10 @@ class Carousel {
     window.setTimeout(() => {
       if (currentItem.nextSibling.classList.contains('cloned')) {
         currentItem.nextSibling.classList.remove('active');
-        carouselItemWrapper.querySelectorAll('.item')[5].classList.add('active');
+        carouselItemWrapper.querySelectorAll('.item')[this.fillRepeat].classList.add('active');
         this.centerActiveItem(false);
       }
-    }, 550);
+    }, this.jumpBackTimeout);
   }
 
   /* select previous item in carousel */
@@ -103,10 +118,10 @@ class Carousel {
     window.setTimeout(() => {
       if (currentItem.previousSibling.classList.contains('cloned')) {
         currentItem.previousSibling.classList.remove('active');
-        carouselItemWrapper.querySelectorAll('.item')[this.querySelectorAll('.item').length - 6].classList.add('active');
+        carouselItemWrapper.querySelectorAll('.item')[this.carouselParent.querySelectorAll('.item').length - (this.fillRepeat + 1)].classList.add('active');
         this.centerActiveItem(false);
       }
-    }, 550);
+    }, this.jumpBackTimeout);
   }
 
   initialize = () => {
@@ -125,14 +140,14 @@ class Carousel {
     }).then((carouselItemWrapper) => {
       /* add five items before and after carousel by cloning head and tail respectively */
       const carouselItemsCount = carouselItemWrapper.querySelectorAll('.item').length;
-      for (let i = carouselItemsCount - 1; i > carouselItemsCount - 6; i -= 1) {
+      for (let i = carouselItemsCount - 1; i > carouselItemsCount - (this.fillRepeat + 1); i -= 1) {
         const clonedItem = carouselItemWrapper.querySelectorAll('.item')[carouselItemsCount - 1].cloneNode(true);
         clonedItem.classList.remove('active');
         clonedItem.classList.add('cloned');
         clonedItem.classList.add('before');
         carouselItemWrapper.insertAdjacentElement('afterBegin', clonedItem);
       }
-      for (let i = 5; i < 10; i += 1) {
+      for (let i = this.fillRepeat; i < (this.fillRepeat * 2); i += 1) {
         const clonedItem = carouselItemWrapper.querySelectorAll('.item')[i].cloneNode(true);
         clonedItem.classList.remove('active');
         clonedItem.classList.add('cloned');
@@ -141,7 +156,7 @@ class Carousel {
       }
       /* append event handler that fires if first 5 images are loaded */
       let visibleItemImages = [];
-      for (let i = 0; i < 5; i += 1) {
+      for (let i = 0; i < this.loadSensitivity; i += 1) {
         try {
           visibleItemImages.push(this.carouselParent.querySelectorAll('.item img')[i]);
         } catch (error) {
@@ -156,13 +171,13 @@ class Carousel {
       carouselNavigation.classList.add('nav');
       const carouselButtonPrev = document.createElement('div');
       carouselButtonPrev.classList.add('prev');
-      carouselButtonPrev.textContent = '\u25C0'; /* '\uF053'; */
+      carouselButtonPrev.textContent = this.prevSymbol; /* '\uF053'; */
       carouselButtonPrev.addEventListener('click', () => {
         this.getPrevItem();
       });
       const carouselButtonNext = document.createElement('div');
       carouselButtonNext.classList.add('next');
-      carouselButtonNext.textContent = '\u25B6'; /* '\uF054'; */
+      carouselButtonNext.textContent = this.nextSymbol; /* '\uF054'; */
       carouselButtonNext.addEventListener('click', () => {
         this.getNextItem();
       });
@@ -211,6 +226,6 @@ let carousels = [];
       for (const carousel of Object.values(carousels)) { 
         carousel.centerActiveItem(false);
       };
-    }, 250);
+    }, this.resizeRepaintTimeout);
   }, false);
 })();
