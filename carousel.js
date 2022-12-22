@@ -1,20 +1,30 @@
+/**
+ * carousel-js
+ * @version 1.1.0
+ * @author Jasper Habicht
+ * @license The MIT License (MIT)
+ */
 class Carousel {
   constructor(carouselParent, options = { 
-      appendRepeat: 5, 
-      loadSensitivity: 5, 
-      touchError: 100, 
-      prevSymbol: '\u25C0', 
-      nextSymbol: '\u25B6', 
-      jumpBackTimeout: 550,
-      resizeRepaintTimeout: 250
-    }) {
+    appendRepeat: 5, 
+    loadSensitivity: 5, 
+    hasNavigation: true, 
+    navigationPrevSymbol: '\u25C0', 
+    navigationNextSymbol: '\u25B6', 
+    hasTouch: true, 
+    touchError: 100, 
+    jumpBackTimeout: 550, 
+    resizeRepaintTimeout: 250 
+  }) {
     this.carouselParent = carouselParent;
     this.id = carouselParent.id;
     this.appendRepeat = options.appendRepeat;
     this.loadSensitivity = options.loadSensitivity;
+    this.hasNavigation = options.hasNavigation;
+    this.navigationPrevSymbol = options.navigationPrevSymbol;
+    this.navigationNextSymbol = options.navigationNextSymbol;
+    this.hasTouch = options.hasTouch;
     this.touchError = options.touchError;
-    this.prevSymbol = options.prevSymbol;
-    this.nextSymbol = options.nextSymbol;
     this.jumpBackTimeout = options.jumpBackTimeout;
     this.resizeRepaintTimeout = options.resizeRepaintTimeout;
     Carousel.all.push(this);
@@ -94,7 +104,7 @@ class Carousel {
 
   /* select next item in carousel */
   getNextItem = () => {
-    if(this.carouselParent.querySelectorAll('.item.active').length == 0) {
+    if (this.carouselParent.querySelectorAll('.item.active').length == 0) {
       this.carouselParent.querySelectorAll('.item')[0].classList.add('active');
     }
     const carouselItemWrapper = this.carouselParent.querySelector('.wrapper');
@@ -123,7 +133,7 @@ class Carousel {
 
   /* select previous item in carousel */
   getPrevItem = () => {
-    if(this.carouselParent.querySelectorAll('.item.active').length == 0) {
+    if (this.carouselParent.querySelectorAll('.item.active').length == 0) {
       this.carouselParent.querySelectorAll('.item')[0].classList.add('active');
     }
     const carouselItemWrapper = this.carouselParent.querySelector('.wrapper');
@@ -191,30 +201,34 @@ class Carousel {
       return carouselItemWrapper;
     }).then((carouselItemWrapper) => {
       /* add mouse navigation to carousel */
-      const carouselNavigation = document.createElement('div');
-      carouselNavigation.classList.add('nav');
-      const carouselButtonPrev = document.createElement('div');
-      carouselButtonPrev.classList.add('prev');
-      carouselButtonPrev.textContent = this.prevSymbol;
-      carouselButtonPrev.addEventListener('click', () => {
-        this.getPrevItem();
-      });
-      const carouselButtonNext = document.createElement('div');
-      carouselButtonNext.classList.add('next');
-      carouselButtonNext.textContent = this.nextSymbol;
-      carouselButtonNext.addEventListener('click', () => {
-        this.getNextItem();
-      });
-      carouselNavigation.appendChild(carouselButtonPrev);
-      carouselNavigation.appendChild(carouselButtonNext);
-      this.carouselParent.appendChild(carouselNavigation);
+      if (this.hasNavigation) {
+        const carouselNavigation = document.createElement('div');
+        carouselNavigation.classList.add('nav');
+        const carouselButtonPrev = document.createElement('div');
+        carouselButtonPrev.classList.add('prev');
+        carouselButtonPrev.textContent = this.navigationPrevSymbol;
+        carouselButtonPrev.addEventListener('click', () => {
+          this.getPrevItem();
+        });
+        const carouselButtonNext = document.createElement('div');
+        carouselButtonNext.classList.add('next');
+        carouselButtonNext.textContent = this.navigationNextSymbol;
+        carouselButtonNext.addEventListener('click', () => {
+          this.getNextItem();
+        });
+        carouselNavigation.appendChild(carouselButtonPrev);
+        carouselNavigation.appendChild(carouselButtonNext);
+        this.carouselParent.appendChild(carouselNavigation);
+      }
       /* add touch navigation to carousel */
-      this.carouselParent.addEventListener('touchstart', (event) => {
-        this.touchRecordPosition(event);
-      }, { passive: true }, false);
-      this.carouselParent.addEventListener('touchend', (event) => {
-        this.touchRecordMove(event);
-      }, { passive: true }, false);
+      if (this.hasTouch) {
+        this.carouselParent.addEventListener('touchstart', (event) => {
+          this.touchRecordPosition(event);
+        }, { passive: true }, false);
+        this.carouselParent.addEventListener('touchend', (event) => {
+          this.touchRecordMove(event);
+        }, { passive: true }, false);
+      }
       return true;
     }).catch((error) => {
       console.log(error);
