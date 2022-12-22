@@ -4,17 +4,18 @@
  * @author Jasper Habicht
  * @license The MIT License (MIT)
  */
+/* global window, document, console, Promise, setTimeout, clearTimeout */
 class Carousel {
-  constructor(carouselParent, options = { 
-    appendRepeat: 5, 
-    loadSensitivity: 5, 
-    hasNavigation: true, 
-    navigationPrevSymbol: '\u25C0', 
-    navigationNextSymbol: '\u25B6', 
-    hasTouch: true, 
-    touchError: 100, 
-    jumpBackTimeout: 550, 
-    resizeRepaintTimeout: 250 
+  constructor(carouselParent, options = {
+    appendRepeat: 5,
+    loadSensitivity: 5,
+    hasNavigation: true,
+    navigationPrevSymbol: '\u25C0',
+    navigationNextSymbol: '\u25B6',
+    hasTouch: true,
+    touchError: 100,
+    jumpBackTimeout: 550,
+    resizeRepaintTimeout: 250,
   }) {
     this.carouselParent = carouselParent;
     this.id = carouselParent.id;
@@ -39,11 +40,13 @@ class Carousel {
   static touchUnify = (event) => {
     return event.changedTouches ? event.changedTouches[0] : event;
   };
+
   touchRecordPosition = (event) => {
     this.touchMoveStartX = Carousel.touchUnify(event).clientX;
     this.touchMoveStartY = Carousel.touchUnify(event).clientY;
     return true;
   };
+
   touchRecordMove = (event) => {
     let touchDistanceX = 0;
     let touchDistanceY = 0;
@@ -55,11 +58,15 @@ class Carousel {
       touchDistanceY = Carousel.touchUnify(event).clientY - this.touchMoveStartY;
       this.touchMoveStartY = null;
     }
-    if (Math.sign(touchDistanceX) < 0 && touchDistanceY < this.touchError && touchDistanceY > (-1 * this.touchError)) {
+    if (Math.sign(touchDistanceX) < 0 
+      && touchDistanceY < this.touchError 
+      && touchDistanceY > (-1 * this.touchError)) {
       this.getNextItem();
       return true;
     }
-    if (Math.sign(touchDistanceX) > 0 && touchDistanceY < this.touchError && touchDistanceY > (-1 * this.touchError)) {
+    if (Math.sign(touchDistanceX) > 0 
+      && touchDistanceY < this.touchError 
+      && touchDistanceY > (-1 * this.touchError)) {
       this.getPrevItem();
       return true;
     }
@@ -68,16 +75,17 @@ class Carousel {
 
   /* pseudo event called when first 5 images are loaded */
   unhideAfterLoading = (imagesArray) => {
-    let visibleImagesLoading = Array(imagesArray.length).fill(1);
-    for (let i = 0; i < imagesArray.length; i += 1){
+    const visibleImagesLoading = Array(imagesArray.length).fill(1);
+    for (let i = 0; i < imagesArray.length; i += 1) {
       imagesArray[i].addEventListener('load', () => {
         visibleImagesLoading[i] = 0;
-        if(visibleImagesLoading.reduce((a, b) => a + b, 0) == 0) {
+        if (visibleImagesLoading.reduce((a, b) => a + b, 0) === 0) {
           this.carouselParent.classList.remove('loading');
           return true;
         }
-      }, { once : true });
-      if(imagesArray[i].complete) {
+        return false;
+      }, { once: true });
+      if (imagesArray[i].complete) {
         imagesArray[i].load();
       }
     }
@@ -88,12 +96,13 @@ class Carousel {
   centerActiveItem = (animate = true) => {
     const carouselItemWrapper = this.carouselParent.querySelector('.wrapper');
     const currentItem = carouselItemWrapper.querySelector('.active');
-    const currentItemOffset = this.carouselParent.offsetWidth / 2 - currentItem.offsetLeft - currentItem.offsetWidth / 2;
+    const currentItemOffset = this.carouselParent.offsetWidth / 2 
+      - currentItem.offsetLeft - currentItem.offsetWidth / 2;
     /* skip transition (relevant CSS class is needed) */
     if (animate === false) {
       carouselItemWrapper.classList.add('skip-transition');
     }
-    carouselItemWrapper.style.transform = 'translateX(' + parseInt(currentItemOffset) + 'px)';
+    carouselItemWrapper.style.transform = `translateX(${parseInt(currentItemOffset, 10)}px)`;
     /* force paint reflow */
     void carouselItemWrapper.offsetWidth;
     if (animate === false) {
@@ -104,14 +113,14 @@ class Carousel {
 
   /* select next item in carousel */
   getNextItem = () => {
-    if (this.carouselParent.querySelectorAll('.item.active').length == 0) {
+    if (this.carouselParent.querySelectorAll('.item.active').length === 0) {
       this.carouselParent.querySelectorAll('.item')[0].classList.add('active');
     }
     const carouselItemWrapper = this.carouselParent.querySelector('.wrapper');
     const currentItem = carouselItemWrapper.querySelector('.active');
     currentItem.classList.remove('active');
     try {
-      currentItem.nextSibling.classList.add('active');;
+      currentItem.nextSibling.classList.add('active');
     } catch (error) {
       console.debug('Next item currently not accessible.');
     }
@@ -133,7 +142,7 @@ class Carousel {
 
   /* select previous item in carousel */
   getPrevItem = () => {
-    if (this.carouselParent.querySelectorAll('.item.active').length == 0) {
+    if (this.carouselParent.querySelectorAll('.item.active').length === 0) {
       this.carouselParent.querySelectorAll('.item')[0].classList.add('active');
     }
     const carouselItemWrapper = this.carouselParent.querySelector('.wrapper');
@@ -150,7 +159,8 @@ class Carousel {
       try {
         if (currentItem.previousSibling.classList.contains('cloned')) {
           currentItem.previousSibling.classList.remove('active');
-          carouselItemWrapper.querySelectorAll('.item')[this.carouselParent.querySelectorAll('.item').length - (this.appendRepeat + 1)].classList.add('active');
+          carouselItemWrapper.querySelectorAll('.item')[this.carouselParent.querySelectorAll('.item').length 
+            - (this.appendRepeat + 1)].classList.add('active');
           this.centerActiveItem(false);
         }
       } catch (error) {
@@ -189,15 +199,15 @@ class Carousel {
         carouselItemWrapper.insertAdjacentElement('beforeEnd', clonedItem);
       }
       /* append event handler that fires if first 5 images are loaded */
-      let visibleItemImages = [];
+      const visibleItemImages = [];
       for (let i = 0; i < this.loadSensitivity; i += 1) {
         try {
           visibleItemImages.push(this.carouselParent.querySelectorAll('.item img')[i]);
         } catch (error) {
-          console.debug('Item ' + i + ' has no IMG tag.');
+          console.debug(`Item ${i} has no IMG tag.`);
         }
       }
-      this.unhideAfterLoading(visibleItemImages);        
+      this.unhideAfterLoading(visibleItemImages);
       return carouselItemWrapper;
     }).then((carouselItemWrapper) => {
       /* add mouse navigation to carousel */
@@ -237,7 +247,7 @@ class Carousel {
   }
 }
 
-let carousels = [];
+const carousels = [];
 
 /* sandboxing to prevent leakage of function assignments */
 (() => {
@@ -252,9 +262,9 @@ let carousels = [];
 
   /* align carousel after all images have been loaded */
   window.addEventListener('load', () => {
-    for (const carousel of Object.values(carousels)) { 
+    Object.values(carousels).forEach((carousel) => {
       carousel.centerActiveItem();
-    };
+    });
   });
 
   /* update alignment after window resize (wrap in timeout to prevent bubbling) */
@@ -262,9 +272,9 @@ let carousels = [];
   window.addEventListener('resize', () => {
     clearTimeout(resizeTimeout);
     resizeTimeout = setTimeout(() => {
-      for (const carousel of Object.values(carousels)) { 
+      Object.values(carousels).forEach((carousel) => {
         carousel.centerActiveItem(false);
-      };
+      });
     }, this.resizeRepaintTimeout);
   }, false);
 })();
