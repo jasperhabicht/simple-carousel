@@ -76,7 +76,7 @@ class Carousel {
   /* pseudo event called when first 5 images are loaded */
   unhideAfterLoading = (imagesArray) => {
     const visibleImagesLoading = Array(imagesArray.length).fill(1);
-    for (let i = 0; i < imagesArray.length; i += 1) {
+    for (let i = 0, j = imagesArray.length; i < j; i += 1) {
       imagesArray[i].addEventListener('load', () => {
         visibleImagesLoading[i] = 0;
         if (visibleImagesLoading.reduce((a, b) => a + b, 0) === 0) {
@@ -176,22 +176,22 @@ class Carousel {
       const carouselItemWrapper = document.createElement('div');
       carouselItemWrapper.classList.add('wrapper');
       this.carouselParent.appendChild(carouselItemWrapper);
-      for (let j = this.carouselParent.querySelectorAll('.item').length - 1; j >= 0; j -= 1) {
-        carouselItemWrapper.insertAdjacentElement('afterbegin', this.carouselParent.querySelectorAll('.item')[j]);
+      for (let i = this.carouselParent.querySelectorAll('.item').length - 1; i >= 0; i -= 1) {
+        carouselItemWrapper.insertAdjacentElement('afterbegin', this.carouselParent.querySelectorAll('.item')[i]);
       }
       this.carouselParent.querySelectorAll('.item')[0].classList.add('active');
       resolve(carouselItemWrapper);
     }).then((carouselItemWrapper) => {
       /* add five items before and after carousel by cloning head and tail respectively */
       const carouselItemsCount = carouselItemWrapper.querySelectorAll('.item').length;
-      for (let i = carouselItemsCount - 1; i > carouselItemsCount - (this.appendRepeat + 1); i -= 1) {
+      for (let i = carouselItemsCount - 1, j = carouselItemsCount - (this.appendRepeat + 1); i > j; i -= 1) {
         const clonedItem = carouselItemWrapper.querySelectorAll('.item')[carouselItemsCount - 1].cloneNode(true);
         clonedItem.classList.remove('active');
         clonedItem.classList.add('cloned');
         clonedItem.classList.add('before');
         carouselItemWrapper.insertAdjacentElement('afterBegin', clonedItem);
       }
-      for (let i = this.appendRepeat; i < (this.appendRepeat * 2); i += 1) {
+      for (let i = this.appendRepeat, j = (this.appendRepeat * 2); i < j; i += 1) {
         const clonedItem = carouselItemWrapper.querySelectorAll('.item')[i].cloneNode(true);
         clonedItem.classList.remove('active');
         clonedItem.classList.add('cloned');
@@ -200,7 +200,7 @@ class Carousel {
       }
       /* append event handler that fires if first 5 images are loaded */
       const visibleItemImages = [];
-      for (let i = 0; i < this.loadSensitivity; i += 1) {
+      for (let i = 0, j = this.loadSensitivity; i < j; i += 1) {
         try {
           visibleItemImages.push(this.carouselParent.querySelectorAll('.item img')[i]);
         } catch (error) {
@@ -247,22 +247,26 @@ class Carousel {
   }
 }
 
-const carousels = [];
-
 /* sandboxing to prevent leakage of function assignments */
-(() => {
+const CarouselJS = new function() {
+  const allCarousels = [];
+
+  this.select = (id) => {
+    return allCarousels[id];
+  };
+
   document.addEventListener('DOMContentLoaded', () => {
     const allCarouselItems = document.querySelectorAll('.carousel');
-    for (let i = 0; i < allCarouselItems.length; i += 1) {
+    for (let i = 0, j = allCarouselItems.length; i < j; i += 1) {
       const currentCarousel = new Carousel(allCarouselItems[i]);
-      carousels[currentCarousel.id || i] = currentCarousel;
+      allCarousels[currentCarousel.id || i] = currentCarousel;
       currentCarousel.initialize();
     }
   });
 
   /* align carousel after all images have been loaded */
   window.addEventListener('load', () => {
-    Object.values(carousels).forEach((carousel) => {
+    Object.values(allCarousels).forEach((carousel) => {
       carousel.centerActiveItem();
     });
   });
@@ -272,9 +276,9 @@ const carousels = [];
   window.addEventListener('resize', () => {
     clearTimeout(resizeTimeout);
     resizeTimeout = setTimeout(() => {
-      Object.values(carousels).forEach((carousel) => {
+      Object.values(allCarousels).forEach((carousel) => {
         carousel.centerActiveItem(false);
       });
     }, this.resizeRepaintTimeout);
   }, false);
-})();
+}();
