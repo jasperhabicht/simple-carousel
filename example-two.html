@@ -187,13 +187,13 @@
     <p>Ladezeit: <span id="loading-time"></span></p>
 
     <!-- <script src="https://polyfill.io/v3/polyfill.min.js?features=Element.prototype.classList%2CElement.prototype.cloneNode%2CObject.values%2CElement.prototype.closest%2CPromise%2Cdocument.querySelector"></script> -->
-    <script src="carousel.js"></script>
+    <script src="simple-carousel.js"></script>
 
     <script>
     window.addEventListener('load', () => {
         /* autoplay */
         setInterval(() => {
-            CarouselJS.select('carousel-1').getNextItem();
+            SimpleCarousel.select('carousel-1').getNextItem();
         }, 8000);
     });
 

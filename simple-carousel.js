@@ -1,5 +1,5 @@
 /**
- * carousel-js
+ * simple-carousel
  * @version 1.1.1
  * @author Jasper Habicht
  * @license The MIT License (MIT)
@@ -248,7 +248,7 @@ class Carousel {
 }
 
 /* sandboxing to prevent leakage of function assignments */
-const CarouselJS = new function() {
+const SimpleCarousel = new function() {
   const allCarousels = [];
 
   this.select = (id) => {
