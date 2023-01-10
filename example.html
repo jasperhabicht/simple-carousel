@@ -34,6 +34,7 @@
             .carousel .item img {
                 display: block;
                 width: 100%;
+                max-height: 500px;
             }
 
             .carousel .wrapper {
@@ -80,12 +81,7 @@
         <script src="simple-carousel.js"></script>
 
         <script>
-        window.addEventListener('load', () => {
-            /* autoplay */
-            setInterval(() => {
-                SimpleCarousel.select('carousel-1').getNextItem();
-            }, 8000);
-        });
+            SimpleCarousel.create('carousel-1', { hasAutoplay: true, autoplayDelay: 8000 });
         </script>
 
     </head>
@@ -93,68 +89,22 @@
     <body>
 
     <div id="carousel-1" class="carousel loading">
-        <div class="item"><img src="https://www.dino-bruns.de/img/innenausbau/IMG_5529-512.jpg" alt="" /></div>
-        <div class="item"><img src="https://www.dino-bruns.de/img/innenausbau/IMG_5535-512.jpg" alt="" /></div>
-        <div class="item"><img src="https://www.dino-bruns.de/img/innenausbau/IMG_5523-512.jpg" alt="" /></div>
-        <div class="item"><img src="https://www.dino-bruns.de/img/innenausbau/IMG_5532-512.jpg" alt="" /></div>
-        <div class="item"><img src="https://www.dino-bruns.de/img/innenausbau/IMG_5557-512.jpg" alt="" /></div>
-        <div class="item"><img src="https://www.dino-bruns.de/img/innenausbau/IMG_5559-512.jpg" alt="" /></div>
-        <div class="item"><img src="https://www.dino-bruns.de/img/innenausbau/IMG_5549-512.jpg" alt="" /></div>
-        <div class="item"><img src="https://www.dino-bruns.de/img/innenausbau/IMG_5515-512.jpg" alt="" /></div>
-        <div class="item"><img src="https://www.dino-bruns.de/img/innenausbau/IMG_5129-512.jpg" alt="" /></div>
-        <div class="item"><img src="https://www.dino-bruns.de/img/innenausbau/IMG_5157-512.jpg" alt="" /></div>
-        <div class="item"><img src="https://www.dino-bruns.de/img/innenausbau/IMG_5160-512.jpg" alt="" /></div>
-        <div class="item"><img src="https://www.dino-bruns.de/img/innenausbau/IMG_5161-512.jpg" alt="" /></div>
-
-        <div class="item"><img src="https://www.dino-bruns.de/img/innenausbau/IMG_2184-512.jpg" alt="" /></div>
-        <div class="item"><img src="https://www.dino-bruns.de/img/innenausbau/IMG_2190-512.jpg" alt="" /></div>
-        <div class="item"><img src="https://www.dino-bruns.de/img/innenausbau/IMG_2189-512.jpg" alt="" /></div>
-        <div class="item"><img src="https://www.dino-bruns.de/img/innenausbau/IMG_2192-512.jpg" alt="" /></div>
-
-        <div class="item"><img src="https://www.dino-bruns.de/img/innenausbau/IMG_3689-512.jpg" alt="" /></div>
-        <div class="item"><img src="https://www.dino-bruns.de/img/innenausbau/IMG_3605-512.jpg" alt="" /></div>
-        <div class="item"><img src="https://www.dino-bruns.de/img/innenausbau/IMG_3606-512.jpg" alt="" /></div>
-        <div class="item"><img src="https://www.dino-bruns.de/img/innenausbau/IMG_3600-512.jpg" alt="" /></div>
-        <div class="item"><img src="https://www.dino-bruns.de/img/innenausbau/IMG_3601-512.jpg" alt="" /></div>
-        <div class="item"><img src="https://www.dino-bruns.de/img/innenausbau/IMG_3603-512.jpg" alt="" /></div>
-        <div class="item"><img src="https://www.dino-bruns.de/img/innenausbau/IMG_3625-512.jpg" alt="" /></div>
-        <div class="item"><img src="https://www.dino-bruns.de/img/innenausbau/IMG_3636-512.jpg" alt="" /></div>
-
-        <div class="item"><img src="https://www.dino-bruns.de/img/innenausbau/IMG_4385-512.jpg" alt="" /></div>
-        <div class="item"><img src="https://www.dino-bruns.de/img/innenausbau/IMG_4387-512.jpg" alt="" /></div>
-        <div class="item"><img src="https://www.dino-bruns.de/img/innenausbau/IMG_4398-512.jpg" alt="" /></div>
-
-        <div class="item"><img src="https://www.dino-bruns.de/img/innenausbau/IMG_3484-512.jpg" alt="" /></div>
-        <div class="item"><img src="https://www.dino-bruns.de/img/innenausbau/IMG_3484-512.jpg" alt="" /></div>
-        <div class="item"><img src="https://www.dino-bruns.de/img/innenausbau/IMG_3492-512.jpg" alt="" /></div>
-        <div class="item"><img src="https://www.dino-bruns.de/img/innenausbau/IMG_3485-512.jpg" alt="" /></div>
-        <div class="item"><img src="https://www.dino-bruns.de/img/innenausbau/IMG_3486-512.jpg" alt="" /></div>
-        <div class="item"><img src="https://www.dino-bruns.de/img/innenausbau/IMG_3488-512.jpg" alt="" /></div>
-        <div class="item"><img src="https://www.dino-bruns.de/img/innenausbau/IMG_3489-512.jpg" alt="" /></div>
-        <div class="item"><img src="https://www.dino-bruns.de/img/innenausbau/IMG_3495-512.jpg" alt="" /></div>
-        <div class="item"><img src="https://www.dino-bruns.de/img/innenausbau/IMG_3476-512.jpg" alt="" /></div>
-        <div class="item"><img src="https://www.dino-bruns.de/img/innenausbau/IMG_3478-512.jpg" alt="" /></div>
-        <div class="item"><img src="https://www.dino-bruns.de/img/innenausbau/IMG_3481-512.jpg" alt="" /></div>
-        <div class="item"><img src="https://www.dino-bruns.de/img/innenausbau/IMG_3483-512.jpg" alt="" /></div>
-        <div class="item"><img src="https://www.dino-bruns.de/img/innenausbau/IMG_2716-512.jpg" alt="" /></div>
-        <div class="item"><img src="https://www.dino-bruns.de/img/innenausbau/IMG_2718-512.jpg" alt="" /></div>
-        <div class="item"><img src="https://www.dino-bruns.de/img/innenausbau/IMG_2719-512.jpg" alt="" /></div>
-        <div class="item"><img src="https://www.dino-bruns.de/img/innenausbau/IMG_2720-512.jpg" alt="" /></div>
-        <div class="item"><img src="https://www.dino-bruns.de/img/innenausbau/IMG_2727-512.jpg" alt="" /></div>
-        <div class="item"><img src="https://www.dino-bruns.de/img/innenausbau/IMG_2728-512.jpg" alt="" /></div>
-        <div class="item"><img src="https://www.dino-bruns.de/img/innenausbau/IMG_3352-512.jpg" alt="" /></div>
-
-        <div class="item"><img src="https://www.dino-bruns.de/img/innenausbau/P1000184-512.jpg" alt="" /></div>
-        <div class="item"><img src="https://www.dino-bruns.de/img/innenausbau/P1000189-512.jpg" alt="" /></div>
-        <div class="item"><img src="https://www.dino-bruns.de/img/innenausbau/P1000193-512.jpg" alt="" /></div>
-
-        <div class="item"><img src="https://www.dino-bruns.de/img/innenausbau/IMG_1964-512.jpg" alt="" /></div>
-        <div class="item"><img src="https://www.dino-bruns.de/img/innenausbau/IMG_1961-512.jpg" alt="" /></div>
-
-        <div class="item"><img src="https://www.dino-bruns.de/img/innenausbau/IMG_1694-512.jpg" alt="" /></div>
-        <div class="item"><img src="https://www.dino-bruns.de/img/innenausbau/IMG_1713-512.jpg" alt="" /></div>
-        <div class="item"><img src="https://www.dino-bruns.de/img/innenausbau/IMG_1716-512.jpg" alt="" /></div>
-        <div class="item"><img src="https://www.dino-bruns.de/img/innenausbau/IMG_1718-512.jpg" alt="" /></div>
+        <div class="item"><img src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?h=500&q=10" alt="" /></div>
+        <div class="item"><img src="https://images.unsplash.com/photo-1573865526739-10659fec78a5?h=500&q=10" alt="" /></div>
+        <div class="item"><img src="https://images.unsplash.com/photo-1533738363-b7f9aef128ce?h=500&q=10" alt="" /></div>
+        <div class="item"><img src="https://images.unsplash.com/photo-1495360010541-f48722b34f7d?h=500&q=10" alt="" /></div>
+        <div class="item"><img src="https://images.unsplash.com/photo-1526336024174-e58f5cdd8e13?h=500&q=10" alt="" /></div>
+        <div class="item"><img src="https://images.unsplash.com/photo-1618826411640-d6df44dd3f7a?h=500&q=10" alt="" /></div>
+        <div class="item"><img src="https://images.unsplash.com/photo-1592194996308-7b43878e84a6?h=500&q=10" alt="" /></div>
+        <div class="item"><img src="https://images.unsplash.com/photo-1561948955-570b270e7c36?h=500&q=10" alt="" /></div>
+        <div class="item"><img src="https://images.unsplash.com/photo-1543852786-1cf6624b9987?h=500&q=10" alt="" /></div>
+        <div class="item"><img src="https://images.unsplash.com/photo-1596854407944-bf87f6fdd49e?h=500&q=10" alt="" /></div>
+        <div class="item"><img src="https://images.unsplash.com/photo-1519052537078-e6302a4968d4?h=500&q=10" alt="" /></div>
+        <div class="item"><img src="https://images.unsplash.com/photo-1529778873920-4da4926a72c2?h=500&q=10" alt="" /></div>
+        <div class="item"><img src="https://images.unsplash.com/photo-1494256997604-768d1f608cac?h=500&q=10" alt="" /></div>
+        <div class="item"><img src="https://images.unsplash.com/photo-1574158622682-e40e69881006?h=500&q=10" alt="" /></div>
+        <div class="item"><img src="https://images.unsplash.com/photo-1478098711619-5ab0b478d6e6?h=500&q=10" alt="" /></div>
+        <div class="item"><img src="https://images.unsplash.com/photo-1533743983669-94fa5c4338ec?h=500&q=10" alt="" /></div>
     </div>
 
     </body>

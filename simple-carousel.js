@@ -1,22 +1,12 @@
 /**
  * simple-carousel
- * @version 1.2.0
+ * @version 1.3.0
  * @author Jasper Habicht
  * @license The MIT License (MIT)
  */
 /* global window, document, console, Promise, setTimeout, clearTimeout */
 class Carousel {
-  constructor(carouselParent, options = {
-    appendRepeat: 5,
-    loadSensitivity: 5,
-    hasNavigation: true,
-    navigationPrevSymbol: '\u25C0',
-    navigationNextSymbol: '\u25B6',
-    hasTouch: true,
-    touchError: 100,
-    jumpBackTimeout: 550,
-    resizeRepaintTimeout: 250,
-  }) {
+  constructor(carouselParent, options) {
     this.carouselParent = carouselParent;
     this.id = carouselParent.id;
     this.appendRepeat = options.appendRepeat;
@@ -24,6 +14,8 @@ class Carousel {
     this.hasNavigation = options.hasNavigation;
     this.navigationPrevSymbol = options.navigationPrevSymbol;
     this.navigationNextSymbol = options.navigationNextSymbol;
+    this.hasAutoplay = options.hasAutoplay;
+    this.autoplayDelay = options.autoplayDelay;
     this.hasTouch = options.hasTouch;
     this.touchError = options.touchError;
     this.jumpBackTimeout = options.jumpBackTimeout;
@@ -239,6 +231,24 @@ class Carousel {
           this.touchRecordMove(event);
         }, { passive: true }, false);
       }
+      /* align carousel after all images have been loaded; autoplay */
+      window.addEventListener('load', () => {
+        this.centerActiveItem();
+        if(this.hasAutoplay) {
+          setInterval(() => {
+            SimpleCarousel.select('carousel-1').getNextItem();
+          }, this.autoplayDelay);
+        }
+      });
+      /* update alignment after window resize (wrap in timeout to prevent bubbling) */
+      let resizeTimeout = false;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+          this.centerActiveItem(false);
+        }, this.resizeRepaintTimeout);
+      }, false);
+      /* === */
       return true;
     }).catch((error) => {
       console.log(error);
@@ -249,36 +259,31 @@ class Carousel {
 
 /* sandboxing to prevent leakage of function assignments */
 const SimpleCarousel = new function() {
+  const defaultOptions = {
+    appendRepeat: 5,
+    loadSensitivity: 5,
+    hasNavigation: true,
+    navigationPrevSymbol: '\u25C0',
+    navigationNextSymbol: '\u25B6',
+    hasAutoplay: false,
+    autoplayDelay: 5000,
+    hasTouch: true,
+    touchError: 100,
+    jumpBackTimeout: 550,
+    resizeRepaintTimeout: 250,
+  };
+
   const allCarousels = [];
 
   this.select = (id) => {
     return allCarousels[id];
   };
 
-  document.addEventListener('DOMContentLoaded', () => {
-    const allCarouselItems = document.querySelectorAll('.carousel');
-    for (let i = 0, j = allCarouselItems.length; i < j; i += 1) {
-      const currentCarousel = new Carousel(allCarouselItems[i]);
-      allCarousels[currentCarousel.id || i] = currentCarousel;
+  this.create = (id, options) => {
+    document.addEventListener('DOMContentLoaded', () => {
+      const currentCarousel = new Carousel(document.getElementById(id), {...defaultOptions, ...options});
+      allCarousels[id] = currentCarousel;
       currentCarousel.initialize();
-    }
-  });
-
-  /* align carousel after all images have been loaded */
-  window.addEventListener('load', () => {
-    Object.values(allCarousels).forEach((carousel) => {
-      carousel.centerActiveItem();
     });
-  });
-
-  /* update alignment after window resize (wrap in timeout to prevent bubbling) */
-  let resizeTimeout = false;
-  window.addEventListener('resize', () => {
-    clearTimeout(resizeTimeout);
-    resizeTimeout = setTimeout(() => {
-      Object.values(allCarousels).forEach((carousel) => {
-        carousel.centerActiveItem(false);
-      });
-    }, this.resizeRepaintTimeout);
-  }, false);
+  }
 }();
