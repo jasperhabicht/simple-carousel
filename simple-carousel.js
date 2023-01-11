@@ -4,7 +4,7 @@
  * @author Jasper Habicht
  * @license The MIT License (MIT)
  */
-/* global window, document, console, Promise, setTimeout, clearTimeout */
+/* global window, document, console, setTimeout, clearTimeout, setInterval */
 class Carousel {
   constructor(carouselParent, options) {
     this.carouselParent = carouselParent;
@@ -281,7 +281,7 @@ const SimpleCarousel = new function() {
 
   this.create = (id, options) => {
     document.addEventListener('DOMContentLoaded', () => {
-      const currentCarousel = new Carousel(document.getElementById(id), {...defaultOptions, ...options});
+      const currentCarousel = new Carousel(document.getElementById(id), { ...defaultOptions, ...options });
       allCarousels[id] = currentCarousel;
       currentCarousel.initialize();
     });
