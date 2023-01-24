@@ -8,7 +8,6 @@
 class Carousel {
   constructor(carouselParent, options) {
     this.carouselParent = carouselParent;
-    this.id = carouselParent.id;
     this.appendRepeat = options.appendRepeat;
     this.loadSensitivity = options.loadSensitivity;
     this.hasNavigation = options.hasNavigation;
@@ -236,7 +235,7 @@ class Carousel {
         this.centerActiveItem();
         if(this.hasAutoplay) {
           setInterval(() => {
-            SimpleCarousel.select('carousel-1').getNextItem();
+            this.getNextItem();
           }, this.autoplayDelay);
         }
       });
@@ -249,7 +248,7 @@ class Carousel {
         }, this.resizeRepaintTimeout);
       }, false);
       /* === */
-      return true;
+      return carouselItemWrapper;
     }).catch((error) => {
       console.log(error);
       return Promise.reject(error);
@@ -279,11 +278,14 @@ const SimpleCarousel = new function() {
     return allCarousels[id];
   };
 
-  this.create = (id, options) => {
+  this.create = (query, options) => {
     document.addEventListener('DOMContentLoaded', () => {
-      const currentCarousel = new Carousel(document.getElementById(id), { ...defaultOptions, ...options });
-      allCarousels[id] = currentCarousel;
-      currentCarousel.initialize();
+      const createCarousels = document.querySelectorAll(query);
+      for (let i = 0, j = createCarousels.length; i < j; i += 1) {
+        const currentCarousel = new Carousel(createCarousels[i], { ...defaultOptions, ...options });
+        allCarousels.push(currentCarousel);
+        currentCarousel.initialize();
+      }
     });
   }
 }();
