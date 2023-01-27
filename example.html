@@ -14,10 +14,9 @@
                 position: relative;
                 width: 100%;
                 height: 512px;
-                white-space: nowrap;
                 overflow: hidden;
                 opacity: 1;
-                transition: opacity .5s ease;
+                transition: opacity .5s ease, transform .5s ease;
             }
 
             .carousel.loading {
@@ -38,10 +37,7 @@
             }
 
             .carousel .wrapper {
-                position: absolute;
-                display: inline-block;
-                height: 100%;
-                transition: transform .5s ease;
+                white-space: nowrap;
             }
 
             .carousel .wrapper.skip-transition {

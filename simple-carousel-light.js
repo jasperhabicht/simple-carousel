@@ -10,7 +10,6 @@ class Carousel {
     this.carouselParent = carouselParent;
     this.hasAutoplay = options.hasAutoplay;
     this.autoplayDelay = options.autoplayDelay;
-    this.jumpBackTimeout = options.jumpBackTimeout;
     this.resizeRepaintTimeout = options.resizeRepaintTimeout;
     Carousel.all.push(this);
   }
@@ -26,13 +25,13 @@ class Carousel {
       - currentItem.offsetLeft - currentItem.offsetWidth / 2;
     /* skip transition (relevant CSS class is needed) */
     if (animate === false) {
-      carouselItemWrapper.classList.add('skip-transition');
+      carouselItemWrapper.style.transition = 'none';
     }
     carouselItemWrapper.style.transform = `translateX(${parseInt(currentItemOffset, 10)}px)`;
     /* force paint reflow */
     void carouselItemWrapper.offsetWidth;
     if (animate === false) {
-      carouselItemWrapper.classList.remove('skip-transition');
+      carouselItemWrapper.style.transition = 'inherit';
     }
     return true;
   }
@@ -52,17 +51,17 @@ class Carousel {
     }
     this.centerActiveItem();
     /* handle frist item: jump to end after animation */
-    window.setTimeout(() => {
-      try {
-        if (currentItem.nextSibling.classList.contains('cloned')) {
+    if (currentItem.nextSibling.classList.contains('cloned')) {
+      Promise.all(this.carouselParent.getAnimations({ subtree: true }).map((animation) => animation.finished)).then(() => {
+        try {
           currentItem.nextSibling.classList.remove('active');
           carouselItemWrapper.querySelectorAll('.item')[0].classList.add('active');
           this.centerActiveItem(false);
+        } catch (error) {
+          console.debug('Previous item currently not accessible.');
         }
-      } catch (error) {
-        console.debug('Previous item currently not accessible.');
-      }
-    }, this.jumpBackTimeout);
+      });
+    }
     return true;
   }
 
@@ -71,6 +70,7 @@ class Carousel {
       /* wrap all items in carousel */
       const carouselItemWrapper = document.createElement('div');
       carouselItemWrapper.classList.add('wrapper');
+      carouselItemWrapper.style.transition = 'inherit';
       this.carouselParent.appendChild(carouselItemWrapper);
       for (let i = this.carouselParent.querySelectorAll('.item').length - 1; i >= 0; i -= 1) {
         carouselItemWrapper.insertAdjacentElement('afterbegin', this.carouselParent.querySelectorAll('.item')[i]);
@@ -117,7 +117,6 @@ const SimpleCarousel = new function() {
   const defaultOptions = {
     hasAutoplay: false,
     autoplayDelay: 5000,
-    jumpBackTimeout: 550,
     resizeRepaintTimeout: 250,
   };
 
@@ -125,7 +124,8 @@ const SimpleCarousel = new function() {
     document.addEventListener('DOMContentLoaded', () => {
       const createCarousels = document.querySelectorAll(query);
       for (let i = 0, j = createCarousels.length; i < j; i += 1) {
-        const currentCarousel = new Carousel(createCarousels[i], { ...defaultOptions, ...options });
+        const currentAnimationDuration = parseInt(window.getComputedStyle(createCarousels[i]).getPropertyValue('transition-duration')) || defaultOptions.animationDuration;
+        const currentCarousel = new Carousel(createCarousels[i], { ...defaultOptions, animationDuration: currentAnimationDuration, ...options });
         currentCarousel.initialize();
       }
     });

@@ -17,7 +17,6 @@ class Carousel {
     this.autoplayDelay = options.autoplayDelay;
     this.hasTouch = options.hasTouch;
     this.touchError = options.touchError;
-    this.jumpBackTimeout = options.jumpBackTimeout;
     this.resizeRepaintTimeout = options.resizeRepaintTimeout;
     Carousel.all.push(this);
   }
@@ -91,13 +90,14 @@ class Carousel {
       - currentItem.offsetLeft - currentItem.offsetWidth / 2;
     /* skip transition (relevant CSS class is needed) */
     if (animate === false) {
-      carouselItemWrapper.classList.add('skip-transition');
+      carouselItemWrapper.style.transition = 'none';
     }
     carouselItemWrapper.style.transform = `translateX(${parseInt(currentItemOffset, 10)}px)`;
     /* force paint reflow */
     void carouselItemWrapper.offsetWidth;
     if (animate === false) {
-      carouselItemWrapper.classList.remove('skip-transition');
+      carouselItemWrapper.style.transition = 'inherit';
+
     }
     return true;
   }
@@ -117,17 +117,17 @@ class Carousel {
     }
     this.centerActiveItem();
     /* handle last item: jump to start after animation */
-    window.setTimeout(() => {
-      try {
-        if (currentItem.nextSibling.classList.contains('cloned')) {
+    if (currentItem.nextSibling.classList.contains('cloned')) {
+      Promise.all(this.carouselParent.getAnimations({ subtree: true }).map((animation) => animation.finished)).then(() => {
+        try {
           currentItem.nextSibling.classList.remove('active');
           carouselItemWrapper.querySelectorAll('.item')[this.appendRepeat].classList.add('active');
           this.centerActiveItem(false);
+        } catch (error) {
+          console.debug('Next item currently not accessible.');
         }
-      } catch (error) {
-        console.debug('Next item currently not accessible.');
-      }
-    }, this.jumpBackTimeout);
+      });
+    }
     return true;
   }
 
@@ -145,20 +145,20 @@ class Carousel {
       console.debug('Previous item currently not accessible.');
     }
     this.centerActiveItem();
-    /* handle frist item: jump to end after animation */
-    window.setTimeout(() => {
-      try {
-        if (currentItem.previousSibling.classList.contains('cloned')) {
+    /* handle first item: jump to end after animation */
+    if (currentItem.previousSibling.classList.contains('cloned')) {
+      Promise.all(this.carouselParent.getAnimations({ subtree: true }).map((animation) => animation.finished)).then(() => {
+        try {
           currentItem.previousSibling.classList.remove('active');
           carouselItemWrapper.querySelectorAll('.item')[this.carouselParent.querySelectorAll('.item').length 
             - (this.appendRepeat + 1)].classList.add('active');
           this.centerActiveItem(false);
+        } catch (error) {
+          console.debug('Previous item currently not accessible.');
         }
-      } catch (error) {
-        console.debug('Previous item currently not accessible.');
-      }
-    }, this.jumpBackTimeout);
-    return true;
+      });
+    }
+  return true;
   }
 
   initialize = () => {
@@ -166,6 +166,7 @@ class Carousel {
       /* wrap all items in carousel */
       const carouselItemWrapper = document.createElement('div');
       carouselItemWrapper.classList.add('wrapper');
+      carouselItemWrapper.style.transition = 'inherit';
       this.carouselParent.appendChild(carouselItemWrapper);
       for (let i = this.carouselParent.querySelectorAll('.item').length - 1; i >= 0; i -= 1) {
         carouselItemWrapper.insertAdjacentElement('afterbegin', this.carouselParent.querySelectorAll('.item')[i]);
@@ -268,7 +269,6 @@ const SimpleCarousel = new function() {
     autoplayDelay: 5000,
     hasTouch: true,
     touchError: 100,
-    jumpBackTimeout: 550,
     resizeRepaintTimeout: 250,
   };
 
