@@ -1,6 +1,6 @@
 /**
  * simple-carousel
- * @version 1.3.0
+ * @version 1.3.1
  * @author Jasper Habicht
  * @license The MIT License (MIT)
  */
@@ -27,7 +27,9 @@ class Carousel {
     if (animate === false) {
       carouselItemWrapper.style.transition = 'none';
     }
-    carouselItemWrapper.style.transform = `translateX(${parseInt(currentItemOffset, 10)}px)`;
+    /* ensure proper alignment on high-resolution displays */
+    const pixelRatio = window.displayPixelRatio || 1;
+    carouselItemWrapper.style.transform = `translateX(${parseInt(currentItemOffset * pixelRatio, 10) / pixelRatio}px)`;
     /* force paint reflow */
     void carouselItemWrapper.offsetWidth;
     if (animate === false) {
