@@ -92,9 +92,7 @@ class Carousel {
     if (animate === false) {
       carouselItemWrapper.style.transition = 'none';
     }
-    /* ensure proper alignment on high-resolution displays */
-    const pixelRatio = parseInt(window.displayPixelRatio || 1, 10);
-    carouselItemWrapper.style.transform = `translateX(${parseInt(currentItemOffset * pixelRatio, 10) / pixelRatio}px)`;
+    carouselItemWrapper.style.transform = `translateX(${currentItemOffset}px)`;
     /* force paint reflow */
     void carouselItemWrapper.offsetWidth;
     if (animate === false) {
