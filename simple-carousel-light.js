@@ -1,6 +1,6 @@
 /**
  * simple-carousel
- * @version 1.3.1
+ * @version 1.3.2
  * @author Jasper Habicht
  * @license The MIT License (MIT)
  */

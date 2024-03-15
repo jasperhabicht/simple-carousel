@@ -18,6 +18,7 @@ class Carousel {
     this.hasTouch = options.hasTouch;
     this.touchError = options.touchError;
     this.resizeRepaintTimeout = options.resizeRepaintTimeout;
+    this.paused = options.paused;
     Carousel.all.push(this);
   }
 
@@ -209,12 +210,36 @@ class Carousel {
         const carouselButtonPrev = document.createElement('div');
         carouselButtonPrev.classList.add('prev');
         carouselButtonPrev.textContent = this.navigationPrevSymbol;
+        carouselButtonPrev.addEventListener('focus', () => {
+          this.paused = true;
+        });
+        carouselButtonPrev.addEventListener('blur', () => {
+          this.paused = false;
+        });
+        carouselButtonPrev.addEventListener('mouseover', () => {
+          this.paused = true;
+        });
+        carouselButtonPrev.addEventListener('mouseout', () => {
+          this.paused = false;
+        });
         carouselButtonPrev.addEventListener('click', () => {
           this.getPrevItem();
         });
         const carouselButtonNext = document.createElement('div');
         carouselButtonNext.classList.add('next');
         carouselButtonNext.textContent = this.navigationNextSymbol;
+        carouselButtonNext.addEventListener('focus', () => {
+          this.paused = true;
+        });
+        carouselButtonNext.addEventListener('blur', () => {
+          this.paused = false;
+        });
+        carouselButtonNext.addEventListener('mouseover', () => {
+          this.paused = true;
+        });
+        carouselButtonNext.addEventListener('mouseout', () => {
+          this.paused = false;
+        });
         carouselButtonNext.addEventListener('click', () => {
           this.getNextItem();
         });
@@ -236,7 +261,9 @@ class Carousel {
         this.centerActiveItem();
         if(this.hasAutoplay) {
           setInterval(() => {
-            this.getNextItem();
+            if(!this.paused) {
+              this.getNextItem();
+            }
           }, this.autoplayDelay);
         }
       });
@@ -270,6 +297,7 @@ const SimpleCarousel = new function() {
     hasTouch: true,
     touchError: 100,
     resizeRepaintTimeout: 250,
+    paused: false,
   };
 
   const allCarousels = [];
