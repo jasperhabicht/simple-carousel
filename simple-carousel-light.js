@@ -1,6 +1,6 @@
 /**
- * simple-carousel
- * @version 1.3.3
+ * simple-carousel-light
+ * @version 1.3.4
  * @author Jasper Habicht
  * @license The MIT License (MIT)
  */
@@ -21,16 +21,16 @@ class Carousel {
   centerActiveItem = (animate = true) => {
     const carouselItemWrapper = this.carouselParent.querySelector('.wrapper');
     const currentItem = carouselItemWrapper.querySelector('.active');
-    const currentItemOffset = this.carouselParent.offsetWidth / 2 
+    const currentItemOffset = this.carouselParent.offsetWidth / 2
       - currentItem.offsetLeft - currentItem.offsetWidth / 2;
-    /* skip transition (relevant CSS class is needed) */
-    if (animate === false) {
+    /* skip transition */
+    if(animate === false) {
       carouselItemWrapper.style.transition = 'none';
     }
     carouselItemWrapper.style.transform = `translateX(${currentItemOffset}px)`;
     /* force paint reflow */
     void carouselItemWrapper.offsetWidth;
-    if (animate === false) {
+    if(animate === false) {
       carouselItemWrapper.style.transition = 'inherit';
     }
     return true;
@@ -46,7 +46,7 @@ class Carousel {
     currentItem.classList.remove('active');
     try {
       currentItem.nextSibling.classList.add('active');
-    } catch (error) {
+    } catch(error) {
       console.debug('Previous item currently not accessible.');
     }
     this.centerActiveItem();
@@ -57,7 +57,7 @@ class Carousel {
           currentItem.nextSibling.classList.remove('active');
           carouselItemWrapper.querySelectorAll('.item')[0].classList.add('active');
           this.centerActiveItem(false);
-        } catch (error) {
+        } catch(error) {
           console.debug('Previous item currently not accessible.');
         }
       });
@@ -72,7 +72,7 @@ class Carousel {
       carouselItemWrapper.classList.add('wrapper');
       carouselItemWrapper.style.transition = 'inherit';
       this.carouselParent.appendChild(carouselItemWrapper);
-      for (let i = this.carouselParent.querySelectorAll('.item').length - 1; i >= 0; i -= 1) {
+      for(let i = this.carouselParent.querySelectorAll('.item').length - 1; i >= 0; i -= 1) {
         carouselItemWrapper.insertAdjacentElement('afterbegin', this.carouselParent.querySelectorAll('.item')[i]);
       }
       this.carouselParent.querySelectorAll('.item')[0].classList.add('active');
@@ -123,8 +123,9 @@ const SimpleCarousel = new function() {
   this.create = (query, options) => {
     document.addEventListener('DOMContentLoaded', () => {
       const createCarousels = document.querySelectorAll(query);
-      for (let i = 0, j = createCarousels.length; i < j; i += 1) {
-        const currentAnimationDuration = parseInt(window.getComputedStyle(createCarousels[i]).getPropertyValue('transition-duration')) || defaultOptions.animationDuration;
+      for(let i = 0, j = createCarousels.length; i < j; i += 1) {
+        const currentAnimationDuration = parseInt(window.getComputedStyle(createCarousels[i]).getPropertyValue('transition-duration')) 
+          || defaultOptions.animationDuration;
         const currentCarousel = new Carousel(createCarousels[i], { ...defaultOptions, animationDuration: currentAnimationDuration, ...options });
         currentCarousel.initialize();
       }
